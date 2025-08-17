@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Only-Yes Crush 💘</title>
+  <style>
+    :root {
+      --bg: #fff6f9;
+      --card: #ffffff;
+      --text: #1f2937;
+      --accent: #ff3b7d;
+      --accent-2: #ff8fb3;
+      --btn: #111827;
+      --btn-text: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      color: var(--text);
+      background: radial-gradient(1200px 800px at 50% 20%, #ffe1ec 0%, var(--bg) 45%);
+      overflow: hidden;
+    }
+
+    .wrap {
+      height: 100%;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+    }
+
+    .card {
+      width: min(680px, 92vw);
+      background: var(--card);
+      border-radius: 24px;
+      padding: 28px 24px 32px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.1), inset 0 0 0 1px rgba(0,0,0,.05);
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .badge {
+      position: absolute;
+      top: 14px; right: 14px;
+      background: #fff0f5;
+      color: var(--accent);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 8px 0 10px;
+      font-size: clamp(28px, 4vw, 40px);
+      line-height: 1.1;
+    }
+    p.sub {
+      margin: 0 0 22px;
+      opacity: .75;
+    }
+
+    .buttons {
+      margin-top: 6px;
+      position: relative;
+      height: 120px; /* space for the runaway button */
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .5rem;
+      padding: 14px 22px;
+      border-radius: 999px;
+      border: 0;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 700;
+      transition: transform .12s ease, box-shadow .2s ease, background .2s ease, opacity .2s ease;
+      box-shadow: 0 6px 16px rgba(0,0,0,.12);
+      user-select: none;
+      will-change: transform, left, top;
+      position: relative;
+    }
+
+    .btn:active { transform: scale(.98); }
+
+    .btn-primary {
+      background: var(--accent);
+      color: var(--btn-text);
+    }
+
+    .btn-ghost {
+      background: #f3f4f6;
+      color: #111827;
+    }
+
+    .stack { display: inline-flex; gap: 14px; position: relative; }
+
+    /* The naughty NO button lives absolutely so it can run away */
+    #noBtn {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Hearts confetti */
+    .heart { position: fixed; font-size: 18px; pointer-events: none; animation: float 2.6s linear forwards; }
+    @keyframes float {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-120vh) scale(1.6); opacity: 0; }
+    }
+
+    .footer {
+      margin-top: 20px;
+      font-size: 12px;
+      opacity: .6;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card" role="dialog" aria-labelledby="title" aria-describedby="desc">
+      <div class="badge">YESS LANG NGANI</div>
+      <h1 id="title">PEDE NA MANLIGAW? 🥺👉👈</h1>
+      <p id="desc" class="sub">You can only pick the honest option. No pressure. Kinda. 😇</p>
+
+      <div class="buttons" id="buttonArea">
+        <div class="stack">
+          <button id="yesBtn" class="btn btn-primary" autofocus aria-label="Yes">✅ Yes</button>
+        </div>
+        <button id="noBtn" class="btn btn-ghost" aria-label="No" aria-disabled="true" tabindex="-1">❌ No</button>
+      </div>
+
+      <div class="footer">Tip: just say yes HAHAHA</div>
+    </div>
+  </div>
+
+  <script>
+    const yesBtn = document.getElementById('yesBtn');
+    const noBtn = document.getElementById('noBtn');
+    const card = document.querySelector('.card');
+    const buttonArea = document.getElementById('buttonArea');
+
+    // Always treat Enter/Space as YES for keyboard users
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleYes();
+      }
+    });
+
+    // Runaway logic for mouse
+    function dodge() {
+      const areaRect = buttonArea.getBoundingClientRect();
+      const btnRect = noBtn.getBoundingClientRect();
+
+      // Choose a random position within the area, keeping button fully inside
+      const maxLeft = areaRect.width - btnRect.width;
+      const maxTop = areaRect.height - btnRect.height;
+      const left = Math.max(0, Math.min(maxLeft, Math.random() * maxLeft));
+      const top = Math.max(0, Math.min(maxTop, Math.random() * maxTop));
+
+      noBtn.style.left = left + 'px';
+      noBtn.style.top = top + 'px';
+    }
+
+    // Extra-dodgy on hover & focus attempts
+    noBtn.addEventListener('mouseenter', dodge);
+    noBtn.addEventListener('mousemove', dodge);
+    noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); dodge(); });
+
+    // If they still click it somehow, count it as YES
+    noBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      playfulToast("You mean YES, right? 😏");
+      handleYes();
+    });
+
+    yesBtn.addEventListener('click', handleYes);
+
+    function handleYes() {
+      document.getElementById('title').textContent = 'YEYYY ILOVEYOUU^^ 💖';
+      document.getElementById('desc').textContent = 'Screenshot this and send it to me!';
+
+      // Make the NO vanish politely
+      noBtn.style.opacity = '0';
+      noBtn.style.pointerEvents = 'none';
+
+      // Celebrate with hearts
+      burstHearts(40);
+    }
+
+    function burstHearts(count = 24) {
+      const emojis = ['💖','💘','💝','💕','💗','💓','💞','❤️','🩷'];
+      for (let i = 0; i < count; i++) {
+        setTimeout(() => {
+          const span = document.createElement('span');
+          span.className = 'heart';
+          span.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+          const startX = Math.random() * window.innerWidth;
+          span.style.left = startX + 'px';
+          span.style.bottom = '-10vh';
+          span.style.fontSize = (16 + Math.random() * 26) + 'px';
+          document.body.appendChild(span);
+          // Clean up after animation
+          setTimeout(() => span.remove(), 2800);
+        }, i * 25);
+      }
+    }
+
+    function playfulToast(msg) {
+      const t = document.createElement('div');
+      t.textContent = msg;
+      Object.assign(t.style, {
+        position: 'fixed',
+        left: '50%',
+        top: '18px',
+        transform: 'translateX(-50%)',
+        background: '#111827',
+        color: 'white',
+        padding: '10px 14px',
+        borderRadius: '999px',
+        fontSize: '14px',
+        boxShadow: '0 6px 16px rgba(0,0,0,.18)',
+        zIndex: 1000,
+        opacity: '0',
+        transition: 'opacity .2s ease, transform .2s ease'
+      });
+      document.body.appendChild(t);
+      requestAnimationFrame(() => {
+        t.style.opacity = '1';
+        t.style.transform = 'translateX(-50%) translateY(4px)';
+      });
+      setTimeout(() => {
+        t.style.opacity = '0';
+        t.style.transform = 'translateX(-50%) translateY(-4px)';
+        setTimeout(() => t.remove(), 220);
+      }, 1400);
+    }
+
+    // Ensure the NO button starts somewhere playful after load
+    window.addEventListener('load', () => setTimeout(dodge, 400));
+  </script>
+</body>
+</html>
